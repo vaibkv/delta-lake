@@ -17,4 +17,71 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.delta</groupId>
+            <artifactId>delta-core_${scala-major-version}.${scala-minor-version}</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_${scala-major-version}.${scala-minor-version}</artifactId>
+            <exclusions>
+                <!-- Logging -->
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+
+                <!-- repackaged in org.glassish.hk2 -->
+                <exclusion>
+                    <artifactId>javax.inject</artifactId>
+                    <groupId>javax.inject</groupId>
+                </exclusion>
+
+                <exclusion>
+                    <artifactId>aopalliance</artifactId>
+                    <groupId>aopalliance</groupId>
+                </exclusion>
+
+                <exclusion>
+                    <artifactId>zookeeper</artifactId>
+                    <groupId>org.apache.zookeeper</groupId>
+                </exclusion>
+
+                <!-- unused -->
+                <exclusion>
+                    <artifactId>unused</artifactId>
+                    <groupId>org.spark-project.spark</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_${scala-major-version}.${scala-minor-version}</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>parquet-hadoop-bundle</artifactId>
+                    <groupId>com.twitter</groupId>
+                </exclusion>
+
+                <!-- unused -->
+                <exclusion>
+                    <artifactId>unused</artifactId>
+                    <groupId>org.spark-project.spark</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+    </dependencies>
+
 </project>

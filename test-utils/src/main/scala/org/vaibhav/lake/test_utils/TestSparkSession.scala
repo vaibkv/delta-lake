@@ -35,6 +35,8 @@ object TestSparkSession {
       .config("spark.sql.optimizer.metadataOnly ", value = false)
       .config("spark.sql.orc.compression.codec ", value = false)
       .config("spark.sql.parquet.writeLegacyFormat", value = true)
+      .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+      .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
       .config("spark.sql.shuffle.partitions", 4)
       .config("spark.ui.enabled", value = false)
       .master("local[*]")

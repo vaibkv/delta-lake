@@ -13,8 +13,6 @@
         <module>test-utils</module>
     </modules>
 
-    <!-- conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" -->
-    <!-- conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog" -->
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
