@@ -6,23 +6,381 @@
 
     <groupId>org.vaibhav.lake</groupId>
     <artifactId>delta-lake</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>lake-operations</module>
+        <module>test-utils</module>
+    </modules>
 
     <!-- conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" -->
     <!-- conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog" -->
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Maven -->
+        <maven-assembly-plugin-version>3.4.2</maven-assembly-plugin-version>
+        <maven-plugin-version>3.2.1</maven-plugin-version>
+        <maven-surefire-plugin-version>3.0.0-M5</maven-surefire-plugin-version>
+        <maven-resources-plugin-version>3.2.0</maven-resources-plugin-version>
+        <maven-compiler-plugin-version>3.8.1</maven-compiler-plugin-version>
+
+        <!-- Delta lake -->
+        <delta-lake-version>2.1.0</delta-lake-version>
+
+        <!-- Scala -->
+        <scala-major-version>2</scala-major-version>
+        <scala-maven-plugin-version>4.7.2</scala-maven-plugin-version>
+        <scala-minor-version>12</scala-minor-version>
+        <scala-patch-version>17</scala-patch-version>
+
+        <!-- Spark -->
+        <spark-version>3.2.2</spark-version>
+        <spark-hive-version>1.2.1.spark2</spark-hive-version>
+        <spark-extension-version>2.0.0-3.2</spark-extension-version>
+
+        <!-- Testing -->
+        <scala-test-version>3.2.10</scala-test-version>
+        <junit-version>4.13.1</junit-version>
+        <scalatestplus-artifact>junit-4-13_${scala-major-version}.${scala-minor-version}</scalatestplus-artifact>
+        <scalatestplus-version>3.2.2.0</scalatestplus-version>
+
+        <!-- jackson -->
+        <jackson-version>2.12.6</jackson-version>
+        <jackson-databind-version>2.12.6.1</jackson-databind-version>
+
+        <!-- Logging -->
+        <logback-version>1.2.9</logback-version>
+        <log4j-version>2.17.1</log4j-version>
+        <slf4j-version>1.7.32</slf4j-version>
+        <datadog-version>2.0.0</datadog-version>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.delta</groupId>
-            <artifactId>delta-core_2.12</artifactId>
-            <version>2.1.0</version>
-        </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <!-- Modules -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>lake-operations</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>test-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-    </dependencies>
+            <!-- Delta lake -->
+            <dependency>
+                <groupId>io.delta</groupId>
+                <artifactId>delta-core_${scala-major-version}.${scala-minor-version}</artifactId>
+                <version>${delta-lake-version}</version>
+            </dependency>
+
+            <!-- Scala -->
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scalap</artifactId>
+                <version>${scala-major-version}.${scala-minor-version}.${scala-patch-version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-compiler</artifactId>
+                <version>${scala-major-version}.${scala-minor-version}.${scala-patch-version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala-major-version}.${scala-minor-version}.${scala-patch-version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-reflect</artifactId>
+                <version>${scala-major-version}.${scala-minor-version}.${scala-patch-version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Logging -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-scala_${scala-major-version}.${scala-minor-version}</artifactId>
+                <version>${jackson-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>log4j-over-slf4j</artifactId>
+                <version>${slf4j-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-version}</version>
+            </dependency>
+
+            <!-- Testing -->
+            <dependency>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest_${scala-major-version}.${scala-minor-version}</artifactId>
+                <version>${scala-test-version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit-version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scalatestplus</groupId>
+                <artifactId>${scalatestplus-artifact}</artifactId>
+                <version>${scalatestplus-version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Spark -->
+            <dependency>
+                <groupId>org.apache.spark</groupId>
+                <artifactId>spark-core_${scala-major-version}.${scala-minor-version}</artifactId>
+                <version>${spark-version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <!-- Logging -->
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.logging.log4j</groupId>
+                        <artifactId>log4j-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-logging</artifactId>
+                        <groupId>commons-logging</groupId>
+                    </exclusion>
+
+                    <!-- repackaged in org.glassish.hk2 -->
+                    <exclusion>
+                        <artifactId>javax.inject</artifactId>
+                        <groupId>javax.inject</groupId>
+                    </exclusion>
+
+                    <exclusion>
+                        <artifactId>aopalliance</artifactId>
+                        <groupId>aopalliance</groupId>
+                    </exclusion>
+
+                    <exclusion>
+                        <artifactId>zookeeper</artifactId>
+                        <groupId>org.apache.zookeeper</groupId>
+                    </exclusion>
+
+                    <!-- unused -->
+                    <exclusion>
+                        <artifactId>unused</artifactId>
+                        <groupId>org.spark-project.spark</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.spark</groupId>
+                <artifactId>spark-sql_${scala-major-version}.${scala-minor-version}</artifactId>
+                <version>${spark-version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>parquet-hadoop-bundle</artifactId>
+                        <groupId>com.twitter</groupId>
+                    </exclusion>
+
+                    <!-- unused -->
+                    <exclusion>
+                        <artifactId>unused</artifactId>
+                        <groupId>org.spark-project.spark</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.spark</groupId>
+                <artifactId>spark-hive_${scala-major-version}.${scala-minor-version}</artifactId>
+                <version>${spark-version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>parquet-hadoop-bundle</artifactId>
+                        <groupId>com.twitter</groupId>
+                    </exclusion>
+
+                    <!-- these are provided by javax.xml.stream:stax-api -->
+                    <exclusion>
+                        <artifactId>stax-api</artifactId>
+                        <groupId>stax</groupId>
+                    </exclusion>
+
+                    <!-- these are provided by apache-arrow -->
+                    <exclusion>
+                        <artifactId>calcite-core</artifactId>
+                        <groupId>org.apache.calcite</groupId>
+                    </exclusion>
+
+                    <!-- repackaged in org.spark-project.hive:hive-exec -->
+                    <exclusion>
+                        <artifactId>hive-exec</artifactId>
+                        <groupId>org.spark-project.hive</groupId>
+                    </exclusion>
+
+                    <!-- other exclusions -->
+                    <exclusion>
+                        <artifactId>jdo-api</artifactId>
+                        <groupId>javax.jdo</groupId>
+                    </exclusion>
+
+                    <!-- unused -->
+                    <exclusion>
+                        <artifactId>unused</artifactId>
+                        <groupId>org.spark-project.spark</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven-assembly-plugin-version}</version>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <!--<skipAssembly>true</skipAssembly>-->
+                            <appendAssemblyId>true</appendAssemblyId>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>${mainClass}</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>${scala-maven-plugin-version}</version>
+                <executions>
+                    <execution>
+                        <id>scala-compile-first</id>
+                        <phase>process-resources</phase>
+                    </execution>
+                    <execution>
+                        <id>scala-test-compile</id>
+                        <phase>process-test-resources</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <scalaVersion>${scala-major-version}.${scala-minor-version}.${scala-patch-version}</scalaVersion>
+                    <scalaCompatVersion>${scala-major-version}.${scala-minor-version}</scalaCompatVersion>
+                    <fork>true</fork>
+                    <jvmArgs>
+                        <jvmArg>-Xms256m</jvmArg>
+                        <jvmArg>-Xmx2046m</jvmArg>
+                        <jvmArg>-Xss16m</jvmArg>
+                    </jvmArgs>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-plugin-version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin-version}</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin-version}</version>
+                <configuration>
+                    <forkCount>4</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <includes>
+                        <include>**/*Test.*</include>
+                    </includes>
+                    <properties>
+                        <excludeTags>slow</excludeTags>
+                    </properties>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven-resources-plugin-version}</version>
+            </plugin>
+        </plugins>
+
+        <resources>
+            <resource>
+                <directory>../resources</directory>
+            </resource>
+        </resources>
+    </build>
 
 </project>
