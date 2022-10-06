@@ -1,59 +1,60 @@
 package lake_utils.post_trade_utils
 
 import lake_utils.post_trade_utils.Models.{TradesRecord, tradesSchema}
-import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
+import org.apache.spark.sql.{DataFrame, Dataset, SparkSession, functions}
 import io.delta.tables._
 
 case class TradesModelUtils(tradesTableName: String,
                             tradesTableLocation: String,
                             isIdentifiedViaLocaton: Boolean,
                             newCsvLocation: String,
-                            fieldsForGranularity: Option[Seq[String]],
+                            fieldsAndValuesForGranularityOpt: Option[Map[String, Option[Seq[String]]]],
                             spark: SparkSession) {
   import spark.implicits._
 
-  def upsertTrades: Dataset[TradesRecord] = {
-
+  def upsertTrades: DeltaTable = {
     val dfTradesCurrent = getCurrentTradesFileDelta.toDF()
     val (deltaTableTrades, isNewTable) = getDeltaTableTrades(dfTradesCurrent)
 
     if (isNewTable) deltaTableTrades else {
-      /*
-      deltaTableTrades
-        .as("mainTradesData")
-        .merge(
-          dfTradesCurrent.as("currentData"),
-          "people.id = updates.id")
-        .whenMatched
-        .updateExpr(
-          Map(
-            "id" -> "updates.id",
-            "firstName" -> "updates.firstName",
-            "middleName" -> "updates.middleName",
-            "lastName" -> "updates.lastName",
-            "gender" -> "updates.gender",
-            "birthDate" -> "updates.birthDate",
-            "ssn" -> "updates.ssn",
-            "salary" -> "updates.salary"
-          ))
-        .whenNotMatched
-        .insertExpr(
-          Map(
-            "id" -> "updates.id",
-            "firstName" -> "updates.firstName",
-            "middleName" -> "updates.middleName",
-            "lastName" -> "updates.lastName",
-            "gender" -> "updates.gender",
-            "birthDate" -> "updates.birthDate",
-            "ssn" -> "updates.ssn",
-            "salary" -> "updates.salary"
-          ))
-        .execute()
-       */
-
-      null
+      getMergedTradesDelta(deltaTableTrades, dfTradesCurrent)
     }
-    null
+  }
+
+  private def getMergedTradesDelta(deltaTableTrades: DeltaTable, dfTradesCurrent: DataFrame): DeltaTable = {
+    import Constants._
+
+    val updateInsertMapExpr = getUpdateInsertMapExpr
+
+    deltaTableTrades
+      .as(MAIN_TRADES_DATA)
+      .merge(
+        dfTradesCurrent.as(CURRENT_DATA),
+        getMergeCondition(MAIN_TRADES_DATA, CURRENT_DATA))
+      .whenMatched
+      .updateExpr(updateInsertMapExpr)
+      .whenNotMatched
+      .insertExpr(updateInsertMapExpr)
+      .execute()
+    deltaTableTrades
+  }
+
+  private def getUpdateInsertMapExpr: Map[String, String] = {
+    import Constants._
+    tradesSchema.fieldNames.map(fName => {
+      fName -> s"$CURRENT_DATA.$fName"
+    }).toMap
+  }
+
+  private def getMergeCondition(mainData: String, currentData: String): String = {
+    if(fieldsAndValuesForGranularityOpt.isEmpty) {
+      tradesSchema.fields.map(fieldName => s"$mainData.$fieldName = $currentData.$fieldName").mkString(" and ")
+    } else {
+      fieldsAndValuesForGranularityOpt.get.map {
+        case (fieldName: String, optFieldValues: Option[Seq[String]]) => s"$mainData.$fieldName = $currentData.$fieldName" +
+          if(optFieldValues.isEmpty) "" else optFieldValues.get.map(fieldVal => s"$mainData.$fieldName = $fieldVal")
+      }.mkString(" and ")
+    }
   }
 
   private def getDeltaTableTrades(currentData: DataFrame): (DeltaTable, Boolean) = {

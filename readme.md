@@ -11,3 +11,5 @@ how code is structured and meant to be used
 remove all comments/todos
 //todo: add other options for header, etc.
 //todo: why didn't we use Decimal type?
+look at plan and suggest optimizations
+//todo: change back rest of the methods to private after some testing
