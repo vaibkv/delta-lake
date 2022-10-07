@@ -26,7 +26,7 @@
         <maven-compiler-plugin-version>3.8.1</maven-compiler-plugin-version>
 
         <!-- Delta lake -->
-        <delta-lake-version>2.1.0</delta-lake-version>
+        <delta-lake-version>2.0.0</delta-lake-version>
 
         <!-- Scala -->
         <scala-major-version>2</scala-major-version>
@@ -101,6 +101,49 @@
                 <artifactId>scala-reflect</artifactId>
                 <version>${scala-major-version}.${scala-minor-version}.${scala-patch-version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.spark</groupId>
+                <artifactId>spark-hive_${scala-major-version}.${scala-minor-version}</artifactId>
+                <version>${spark-version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>parquet-hadoop-bundle</artifactId>
+                        <groupId>com.twitter</groupId>
+                    </exclusion>
+
+                    <!-- these are provided by javax.xml.stream:stax-api -->
+                    <exclusion>
+                        <artifactId>stax-api</artifactId>
+                        <groupId>stax</groupId>
+                    </exclusion>
+
+                    <!-- these are provided by apache-arrow -->
+                    <exclusion>
+                        <artifactId>calcite-core</artifactId>
+                        <groupId>org.apache.calcite</groupId>
+                    </exclusion>
+
+                    <!-- repackaged in org.spark-project.hive:hive-exec -->
+                    <exclusion>
+                        <artifactId>hive-exec</artifactId>
+                        <groupId>org.spark-project.hive</groupId>
+                    </exclusion>
+
+                    <!-- other exclusions -->
+                    <exclusion>
+                        <artifactId>jdo-api</artifactId>
+                        <groupId>javax.jdo</groupId>
+                    </exclusion>
+
+                    <!-- unused -->
+                    <exclusion>
+                        <artifactId>unused</artifactId>
+                        <groupId>org.spark-project.spark</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- Logging -->

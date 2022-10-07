@@ -4,6 +4,8 @@ import lake_utils.post_trade_utils.Models.{TradesRecord, tradesSchema}
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 import io.delta.tables._
 
+import scala.language.postfixOps
+
 case class TradesModelUtils(tradesTableName: String,
                             tradesTableLocation: String,
                             isIdentifiedViaLocaton: Boolean,
@@ -51,8 +53,8 @@ case class TradesModelUtils(tradesTableName: String,
       tradesSchema.fields.map(fieldName => s"$mainData.$fieldName = $currentData.$fieldName").mkString(" and ")
     } else {
       fieldsAndValuesForGranularityOpt.get.map {
-        case (fieldName: String, optFieldValues: Option[Seq[String]]) => s"$mainData.$fieldName = $currentData.$fieldName" +
-          if(optFieldValues.isEmpty) "" else optFieldValues.get.map(fieldVal => s"$mainData.$fieldName = $fieldVal")
+        case (fieldName: String, optFieldValues: Option[Seq[String]]) =>
+          s"$mainData.$fieldName = $currentData.$fieldName" + optFieldValues.map(fieldVal => s"$mainData.$fieldName = $fieldVal").getOrElse("")
       }.mkString(" and ")
     }
   }

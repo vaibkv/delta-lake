@@ -30,7 +30,6 @@ object TestSparkSession {
       .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
       .config("spark.shuffle.compress", value = false)
       .config("spark.sql.inMemoryColumnarStorage.compressed", value = false)
-      .config("spark.sql.legacy.parquet.datetimeRebaseModeInRead", "CORRECTED")
       .config("spark.sql.optimizer.maxIterations", 28)
       .config("spark.sql.optimizer.metadataOnly ", value = false)
       .config("spark.sql.orc.compression.codec ", value = false)

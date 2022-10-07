@@ -93,6 +93,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-hive_${scala-major-version}.${scala-minor-version}</artifactId>
+            <!--<scope>test</scope>-->
+        </dependency>
+        <dependency>
             <groupId>org.vaibhav.lake</groupId>
             <artifactId>test-utils</artifactId>
             <scope>test</scope>
