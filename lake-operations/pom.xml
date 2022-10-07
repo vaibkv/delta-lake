@@ -81,6 +81,22 @@
             </exclusions>
         </dependency>
 
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.scalatestplus</groupId>
+            <artifactId>${scalatestplus-artifact}</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_${scala-major-version}.${scala-minor-version}</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.vaibhav.lake</groupId>
+            <artifactId>test-utils</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

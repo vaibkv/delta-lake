@@ -1,7 +1,7 @@
 package lake_utils.post_trade_utils
 
 import lake_utils.post_trade_utils.Models.{TradesRecord, tradesSchema}
-import org.apache.spark.sql.{DataFrame, Dataset, SparkSession, functions}
+import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 import io.delta.tables._
 
 case class TradesModelUtils(tradesTableName: String,
