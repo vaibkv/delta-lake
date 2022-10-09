@@ -77,13 +77,10 @@ class TradesModelUtilsTest extends AnyFlatSpec with PrivateMethodTester with Tes
       TradesRecord("7/11/2021", "Blue", "SomeOtherSec4", 50, 50.00),
     )
     val dfTradesCurrent = spark.createDataset(blueBookRecords).toDF()
-    val getMergedTradesDelta = PrivateMethod[Seq[String]]('getMatchedPrefixes)
-
-    val matchedPrefixes =
-      CATSchemaConversion invokePrivate getMatchedPrefixes(testBucket, s"${prefix}2022-01")
+    val getMergedTradesDelta = PrivateMethod[DeltaTable]('getMergedTradesDelta)
 
     //Act
-    val result = utilsObj.getMergedTradesDelta(resultDeltaTable, dfTradesCurrent)
+    val result = utilsObj invokePrivate getMergedTradesDelta(resultDeltaTable, dfTradesCurrent)
 
     //Assert
     //There should be only 8 records with 'Blue' as book
