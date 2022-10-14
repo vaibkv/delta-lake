@@ -49,11 +49,15 @@ case class TradesModelUtils(tradesTableName: String,
     deltaTableTrades
   }
 
+  //todo: correction
+  /*
+    where (book = 'Blue' or book = 'Arcesium') AND (date = '7/1/2020')
+  */
   private def getWhereClause: String = {
     fieldsAndValuesForGranularityOpt.get.flatMap {
       case (fieldName: String, fieldValues: Seq[String]) =>
-        fieldValues.map(fieldVal => s"$fieldName = '$fieldVal'")
-    }.mkString(" and ")
+        fieldValues.map(fieldVal => s"$fieldName = '$fieldVal'") //use OR here
+    }.mkString(" AND ")
   }
 
   private def getMergeCondition(mainData: String, currentData: String): String = {
