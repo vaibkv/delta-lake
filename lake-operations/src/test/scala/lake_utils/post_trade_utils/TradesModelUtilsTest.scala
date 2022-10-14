@@ -33,7 +33,7 @@ class TradesModelUtilsTest extends AnyFlatSpec with PrivateMethodTester with Tes
 
   behavior of "upsertTrades"
 
-  it should "create initial table when first csv is available" in {
+  ignore should "create initial table when first csv is available" in {
     //Arrange
     val tableName = "tradesDeltaTable"
     spark.sql(s"DROP TABLE IF EXISTS $tableName").show()
@@ -79,8 +79,14 @@ class TradesModelUtilsTest extends AnyFlatSpec with PrivateMethodTester with Tes
     val dfTradesCurrent = spark.createDataset(blueBookRecords).toDF()
     val getMergedTradesDelta = PrivateMethod[DeltaTable]('getMergedTradesDelta)
 
+    //Testing Optimize
+    spark.sql(s"OPTIMIZE $tableName ZORDER BY (book) ").show()
+
     //Act
     val result = utilsObj invokePrivate getMergedTradesDelta(resultDeltaTable, dfTradesCurrent)
+
+    //Testing Optimize
+    spark.sql(s"OPTIMIZE $tableName ZORDER BY (book) ").show()
 
     //Assert
     //There should be only 8 records with 'Blue' as book
